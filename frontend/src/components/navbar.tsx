@@ -18,6 +18,7 @@ import { AiOutlineUser } from 'react-icons/ai';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import ColorModeButton from '@components/color-mode-button';
+import LanguageMenu from './language-menu';
 import NavLink, { NavLinkButton } from '@components/nav-link';
 import LanguageContext from 'language-context';
 
@@ -57,6 +58,7 @@ const NavLinks = ({ isMobile }: { isMobile: boolean }): JSX.Element => {
                 </Flex>
             )}
             <ColorModeButton />
+            <LanguageMenu />
             {!isMobile && (
                 <IconButton
                     data-cy="min-profil"

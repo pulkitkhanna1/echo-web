@@ -28,8 +28,8 @@ const LanguageMenu = (): JSX.Element => {
     };
 
     return (
-        <Button bg="none" fontSize="xxl" onClick={clicked} marginRight="1rem">
-            {language === 'en' ? '🇬🇧' : '🇳🇴'}
+        <Button bg="none" fontSize="xxl" onClick={clicked}>
+            {language === 'en' ?  '🇳🇴': '🇬🇧'}
         </Button>
     );
 };
