@@ -20,9 +20,7 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import no.uib.echo.Response
-import no.uib.echo.isEmailValid
-import no.uib.echo.resToJson
+import no.uib.echo.*
 import no.uib.echo.schema.Answer
 import no.uib.echo.schema.AnswerJson
 import no.uib.echo.schema.Degree
@@ -37,7 +35,6 @@ import no.uib.echo.schema.getGroupMembers
 import no.uib.echo.schema.masters
 import no.uib.echo.schema.selectSpotRanges
 import no.uib.echo.schema.toCsv
-import no.uib.echo.sendConfirmationEmail
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.StdOutSqlLogger
@@ -506,7 +503,7 @@ fun Route.postRegistrationCount() {
 
             slugs.map {
                 val count = Registration.select {
-                    Registration.happeningSlug eq it
+                    Registration.happeningSlug ehiq it
                 }.count()
 
                 val waitListCount = Registration.select {
@@ -532,6 +529,16 @@ fun notifyWaitingList(message: String, highestOnWaitList: RegistrationJson, slug
         Registration.update({ Registration.email eq highestOnWaitList.email.lowercase() and (Registration.happeningSlug eq slug) }) {
             it[waitList] = false
         }
+        sendEmail(
+            "webkom@echo.uib.no",
+            highestOnWaitList.email,
+            SendGridTemplate(
+                "Det er blitt en ledig plass på ! Woho! Mel deg pååå",
+                "http://echo.uib.no/",
+                "haptype?",
+                null,
+                null
+            ))
     }
 
 }
