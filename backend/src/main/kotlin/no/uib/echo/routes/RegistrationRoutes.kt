@@ -38,18 +38,9 @@ import no.uib.echo.schema.masters
 import no.uib.echo.schema.selectSpotRanges
 import no.uib.echo.schema.toCsv
 import no.uib.echo.sendConfirmationEmail
-import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.batchInsert
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.lowerCase
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 import java.net.URLDecoder
 
@@ -511,5 +502,18 @@ fun Route.postRegistrationCount() {
             HttpStatusCode.OK,
             registrationCounts
         )
+    }
+}
+
+fun Route.getUserRegistrations() {
+    get("/user/registrations") {
+        val asd = transaction {
+            addLogger(StdOutSqlLogger)
+            Registration.join(Happening, joinType = JoinType.LEFT, additionalConstraint = { Registration.happeningSlug eq Happening.slug})
+                .selectAll().toList()
+        }.map {
+            it[Registration.happeningSlug]
+        }
+        call.respond(asd)
     }
 }
