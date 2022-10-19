@@ -90,9 +90,10 @@ interface Props {
     type: HappeningType;
     backendUrl: string;
     user: User | null;
+    intern? : Boolean;
 }
 
-const RegistrationForm = ({ happening, regVerifyToken, type, backendUrl, user }: Props): JSX.Element => {
+const RegistrationForm = ({ happening, regVerifyToken, type, backendUrl, user, intern = false }: Props): JSX.Element => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const isNorwegian = useContext(LanguageContext);
     const linkColor = useColorModeValue('blue', 'blue.400');
@@ -141,21 +142,16 @@ const RegistrationForm = ({ happening, regVerifyToken, type, backendUrl, user }:
 
     return (
         <Box data-testid="bedpres-form">
-            <Button data-cy="reg-btn" w="100%" colorScheme="teal" onClick={onOpen}>
+            {intern ? (
+                <Button data-cy="reg-btn" w="100%" colorScheme="teal" onClick={onOpen}>
                 {isNorwegian ? 'Intern påmelding' : 'Register'}
-            </Button>
-            <Center> 
-                <Text fontSize="md">
-                    {isNorwegian ? 'Stenger' : 'Closes'}{' '}
-                    {format(regDeadline, 'dd. MMM, HH:mm', {
-                        locale: isNorwegian ? nb : enUS,
-                    })}
-                </Text>
-            </Center>
-           
-            <Button data-cy="reg-btn" w="100%" colorScheme="teal" onClick={onOpen}>
+            </Button>) : (
+                <Button data-cy="reg-btn" w="100%" colorScheme="teal" onClick={onOpen}>
                 {isNorwegian ? 'Påmelding' : 'Register'}
             </Button>
+            )
+            }
+            
 
             <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
