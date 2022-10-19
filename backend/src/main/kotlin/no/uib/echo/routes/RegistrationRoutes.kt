@@ -460,7 +460,23 @@ fun Route.deleteRegistration(disableJwtAuth: Boolean = false) {
                     Registration.waitList eq true and
                         (Registration.happeningSlug eq hap[Happening.slug])
                 }.orderBy(Registration.submitDate).firstOrNull()
+            }?.let {
+                RegistrationJson(
+                    it[Registration.email],
+                    it[Registration.firstName],
+                    it[Registration.lastName],
+                    Degree.valueOf(it[Registration.degree]),
+                    it[Registration.degreeYear],
+                    it[Registration.happeningSlug],
+                    it[Registration.terms],
+                    it[Registration.submitDate].toString(),
+                    it[Registration.waitList],
+                    emptyList(),
+                    HAPPENING_TYPE.BEDPRES,
+                    null,
+                )
             }
+
 
             if (highestOnWaitList == null) {
                 call.respond(
@@ -468,18 +484,12 @@ fun Route.deleteRegistration(disableJwtAuth: Boolean = false) {
                     "Registration with email = $decodedParamEmail and slug = ${hap[Happening.slug]} deleted."
                 )
             } else {
-                transaction {
-                    addLogger(StdOutSqlLogger)
-
-                    Registration.update({ Registration.email eq highestOnWaitList[Registration.email].lowercase() and (Registration.happeningSlug eq hap[Happening.slug]) }) {
-                        it[waitList] = false
-                    }
-                }
+                notifyWaitingList("waiting list" , highestOnWaitList, slug);
                 call.respond(
                     HttpStatusCode.OK,
-                    "Registration with email = $decodedParamEmail and slug = ${hap[Happening.slug]} deleted, " +
-                        "and registration with email = ${highestOnWaitList[Registration.email].lowercase()} moved off wait list."
+                    "Registration with email = $decodedParamEmail and slug = ${hap[Happening.slug]} deleted, "
                 )
+
             }
         } catch (e: Exception) {
             call.respond(HttpStatusCode.BadRequest, "Error deleting registration.")
@@ -512,4 +522,16 @@ fun Route.postRegistrationCount() {
             registrationCounts
         )
     }
+}
+
+fun notifyWaitingList(message: String, highestOnWaitList: RegistrationJson, slug: String ){
+    println(message);
+    transaction {
+        addLogger(StdOutSqlLogger)
+
+        Registration.update({ Registration.email eq highestOnWaitList.email.lowercase() and (Registration.happeningSlug eq slug) }) {
+            it[waitList] = false
+        }
+    }
+
 }
