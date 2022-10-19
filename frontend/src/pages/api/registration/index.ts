@@ -62,7 +62,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         if (req.method === 'DELETE') {
             try {
                 const email = req.query.email as string;
-                const { data, status } = await axios.delete(`${BACKEND_URL}/registration/${slug}/${email}`, {
+                const dots = req.query.dots as string;
+
+                const endpoint =
+                    dots !== '0'
+                        ? `${BACKEND_URL}/registration/${slug}/${email}?dots=${dots}`
+                        : `${BACKEND_URL}/registration/${slug}/${email}`;
+
+                const { data, status } = await axios.delete(endpoint, {
                     headers: {
                         Authorization: `Bearer ${JWT_TOKEN}`,
                     },

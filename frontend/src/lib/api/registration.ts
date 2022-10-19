@@ -136,9 +136,10 @@ const RegistrationAPI = {
     deleteRegistration: async (
         slug: string,
         email: string,
+        dots: number,
     ): Promise<{ response: string | null; error: string | null }> => {
         try {
-            const { data } = await axios.delete(`/api/registration?slug=${slug}&email=${email}`);
+            const { data } = await axios.delete(`/api/registration?slug=${slug}&email=${email}&dots=${dots}`);
 
             return { response: data, error: null };
         } catch (error) {

@@ -11,6 +11,7 @@ data class UserJson(
     val alternateEmail: String? = null,
     val degreeYear: Int? = null,
     val degree: Degree? = null,
+    val dots: String,
     val memberships: List<String> = emptyList()
 )
 
@@ -20,6 +21,7 @@ object User : Table() {
     val alternateEmail: Column<String?> = text("alternate_email").nullable()
     val degreeYear: Column<Int?> = integer("degree_year").nullable()
     val degree: Column<String?> = text("degree").nullable()
+    val dots: Column<String?> = text("dots").nullable()
 
     override val primaryKey: PrimaryKey = PrimaryKey(email)
 }

@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useToast, Box, Input, HStack, Heading, Text, FormControl, FormLabel, Button } from '@chakra-ui/react';
+import { useToast, Box, Input, HStack, Heading, Text, FormControl, FormLabel, Button, Icon } from '@chakra-ui/react';
 import capitalize from '@utils/capitalize';
 import type { ProfileFormValues, User } from '@api/user';
 import { UserAPI } from '@api/user';
@@ -44,6 +44,7 @@ const ProfileInfo = ({ user }: { user: User }): JSX.Element => {
             degree: data.degree,
             degreeYear: data.degreeYear,
             memberships: [],
+            dots: user.dots,
         });
 
         if (isErrorMessage(res)) {
@@ -108,6 +109,12 @@ const ProfileInfo = ({ user }: { user: User }): JSX.Element => {
                         defaultValue={user.degreeYear ?? undefined}
                         py="1rem"
                     />
+                    <Heading size="md" my="0.5rem">
+                        {isNorwegian ? 'Antall prikker (bedpres)' : 'Number of dots (bedpres)'}
+                    </Heading>
+                    <Text data-cy="profile-email" my="0.5rem">
+                        {user.dots}
+                    </Text>
                     <Heading size="md" my="0.5rem">
                         {isNorwegian ? 'Studentgrupper' : 'Student groups'}
                     </Heading>

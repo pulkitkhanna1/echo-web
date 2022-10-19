@@ -19,6 +19,7 @@ const userDecoder = record({
     degree: union(degreeDecoder, nil),
     degreeYear: union(number, nil),
     memberships: array(string),
+    dots: number,
 });
 type User = decodeType<typeof userDecoder>;
 

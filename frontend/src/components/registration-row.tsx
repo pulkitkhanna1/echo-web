@@ -1,4 +1,14 @@
-import type { TableRowProps } from '@chakra-ui/react';
+import {
+    TableRowProps,
+    NumberInput,
+    NumberDecrementStepper,
+    NumberIncrementStepper,
+    NumberInputField,
+    NumberInputStepper,
+    WrapItem,
+    Center,
+    Wrap,
+} from '@chakra-ui/react';
 import {
     Heading,
     Text,
@@ -22,6 +32,7 @@ import { motion } from 'framer-motion';
 import type { Registration } from '@api/registration';
 import { RegistrationAPI } from '@api/registration';
 import notEmptyOrNull from '@utils/not-empty-or-null';
+import { setDefaultOptions } from 'date-fns';
 
 interface Props {
     registration: Registration;
@@ -34,6 +45,8 @@ const RegistrationRow = ({ registration, questions }: Props) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const [deleted, setDeleted] = useState(false);
+
+    const [dots, setDots] = useState(0);
 
     const toast = useToast();
 
@@ -99,8 +112,22 @@ const RegistrationRow = ({ registration, questions }: Props) => {
                             Dersom det er noen på venteliste, vil denne handlingen automatisk rykke første person på
                             venteliste opp, uten at de får beskjed om dette.
                         </Text>
+                        <Text fontWeight="bold"> Antall prikker </Text>
+                        <NumberInput
+                            name="numDots"
+                            size="md"
+                            maxW={100}
+                            min={0}
+                            max={5}
+                            onChange={(value) => setDots(value)}
+                        >
+                            <NumberInputField />
+                            <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                            </NumberInputStepper>
+                        </NumberInput>
                     </ModalBody>
-
                     <ModalFooter>
                         <SimpleGrid columns={2} spacingX="2rem">
                             {/* eslint-disable @typescript-eslint/no-misused-promises */}
@@ -111,6 +138,7 @@ const RegistrationRow = ({ registration, questions }: Props) => {
                                     const { error } = await RegistrationAPI.deleteRegistration(
                                         registration.slug,
                                         registration.email,
+                                        dots,
                                     );
 
                                     onClose();

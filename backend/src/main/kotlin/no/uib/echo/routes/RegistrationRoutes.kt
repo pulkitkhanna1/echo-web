@@ -431,6 +431,8 @@ fun Route.deleteRegistration(disableJwtAuth: Boolean = false) {
                 return@delete
             }
 
+            val dots = call.request.queryParameters["dots"]
+
             transaction {
                 addLogger(StdOutSqlLogger)
 
@@ -443,6 +445,13 @@ fun Route.deleteRegistration(disableJwtAuth: Boolean = false) {
                     Registration.happeningSlug eq hap[Happening.slug] and
                         (Registration.email.lowerCase() eq decodedParamEmail)
                 }
+                
+                if (dots != null) {
+                    User.update({ User.email.lowerCase() eq decodedParamEmail}) {
+                        it[User.dots] = dots
+                    }
+                }
+
             }
 
             if (reg[Registration.waitList]) {
