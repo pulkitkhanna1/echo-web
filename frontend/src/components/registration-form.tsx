@@ -18,6 +18,7 @@ import {
     useToast,
     VStack,
     Wrap,
+    Center
 } from '@chakra-ui/react';
 import { useContext, useRef } from 'react';
 import NextLink from 'next/link';
@@ -33,6 +34,8 @@ import FormDegree from '@components/form-degree';
 import FormDegreeYear from '@components/form-degree-year';
 import fullNameToSplitName from '@utils/full-name-to-split-name';
 import LanguageContext from 'language-context';
+import { nb, enUS } from 'date-fns/locale';
+import { parseISO, format, formatISO, differenceInMilliseconds, isBefore, isAfter, differenceInHours } from 'date-fns';
 
 const codeToStatus = (statusCode: number): 'success' | 'warning' | 'error' | 'info' | undefined => {
     switch (statusCode) {
@@ -95,6 +98,7 @@ const RegistrationForm = ({ happening, regVerifyToken, type, backendUrl, user }:
     const linkColor = useColorModeValue('blue', 'blue.400');
     const methods = useForm<RegFormValues>();
     const { register, handleSubmit } = methods;
+    const regDeadline = parseISO(happening?.registrationDeadline ?? formatISO(new Date()));
 
     const toast = useToast();
 
@@ -137,6 +141,18 @@ const RegistrationForm = ({ happening, regVerifyToken, type, backendUrl, user }:
 
     return (
         <Box data-testid="bedpres-form">
+            <Button data-cy="reg-btn" w="100%" colorScheme="teal" onClick={onOpen}>
+                {isNorwegian ? 'Intern påmelding' : 'Register'}
+            </Button>
+            <Center> 
+                <Text fontSize="md">
+                    {isNorwegian ? 'Stenger' : 'Closes'}{' '}
+                    {format(regDeadline, 'dd. MMM, HH:mm', {
+                        locale: isNorwegian ? nb : enUS,
+                    })}
+                </Text>
+            </Center>
+           
             <Button data-cy="reg-btn" w="100%" colorScheme="teal" onClick={onOpen}>
                 {isNorwegian ? 'Påmelding' : 'Register'}
             </Button>
