@@ -11,6 +11,7 @@ import no.uib.echo.FeatureToggles
 import no.uib.echo.routes.feedbackRoutes
 import no.uib.echo.routes.happeningRoutes
 import no.uib.echo.routes.registrationRoutes
+import no.uib.echo.routes.studentGroupRoutes
 import no.uib.echo.routes.userRoutes
 
 fun Application.configureRouting(
@@ -32,6 +33,7 @@ fun Application.configureRouting(
     happeningRoutes(dev)
     feedbackRoutes()
     userRoutes()
+    studentGroupRoutes()
 }
 
 fun Route.getStatus() {
