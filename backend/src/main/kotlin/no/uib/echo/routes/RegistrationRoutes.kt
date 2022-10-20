@@ -238,16 +238,30 @@ fun Route.postRegistration(sendGridApiKey: String?, sendEmail: Boolean, verifyRe
                 return@post
             }
 
+            var email: String? = null
+            if (!disableJwtAuth) {
+                email = call.principal<JWTPrincipal>()?.payload?.getClaim("email")?.asString()?.lowercase()
+            }
+
+            val hap = transaction {
+                addLogger(StdOutSqlLogger)
+
+                Happening.select { Happening.slug eq slug }.firstOrNull()
+            }
+
             if (DateTime(happening[Happening.registrationDate]).isAfterNow) {
-                call.respond(
-                    HttpStatusCode.Forbidden,
-                    resToJson(
-                        Response.TooEarly,
-                        registration.type,
-                        regDate = happening[Happening.registrationDate].toString()
+                //Bypass too-early check if user is an organizer
+                if (email !in getGroupMembers(hap[Happening.studentGroupName])) {
+                    call.respond(
+                        HttpStatusCode.Forbidden,
+                        resToJson(
+                            Response.TooEarly,
+                            registration.type,
+                            regDate = happening[Happening.registrationDate].toString()
+                        )
                     )
-                )
-                return@post
+                    return@post
+                }
             }
 
             if (DateTime(happening[Happening.happeningDate]).isBeforeNow) {
